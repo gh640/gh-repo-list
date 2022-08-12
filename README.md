@@ -1,4 +1,4 @@
-⚙️ Simple GitHub CLI extension to list up repositories.
+⚙️ Simple [GitHub CLI](https://cli.github.com/) extension to list up (own|starred) repositories.
 
 ## Requirements
 
@@ -28,3 +28,8 @@ List up starred repositories:
 ```zsh
 gh repo-list --type=starred
 ```
+
+## Reference
+
+- [GitHub CLI | Take GitHub to the command line](https://cli.github.com/)
+- [gh extension | GitHub CLI](https://cli.github.com/manual/gh_extension)
