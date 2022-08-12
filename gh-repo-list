@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""List up all repositories."""
+import argparse
+import json
+import subprocess
+from collections.abc import Callable, Iterator
+from dataclasses import dataclass
+from pprint import pprint
+
+DEBUG = False
+# The max number of results.
+REPOS_FIRST = 100
+
+
+def main():
+    """Main function."""
+    args = parse_args()
+
+    commands = list_commands()
+    command = commands[args.type]
+
+    command()
+
+
+@dataclass
+class Args:
+    type: str
+
+
+def parse_args() -> Args:
+    """Parse CLI args."""
+    command_names = [*list_commands().keys()]
+
+    parser = argparse.ArgumentParser(__doc__)
+    parser.add_argument('--type', type=str, choices=command_names, required=True)
+    parsed = parser.parse_args()
+    return Args(type=parsed.type)
+
+
+def list_commands() -> dict[str, Callable[[], None]]:
+    return {
+        'viewer-status': check_viewer,
+        'own': check_own_repos,
+        'starred': check_starred_repos,
+    }
+
+
+def check_viewer():
+    """Check viewer status."""
+    query = """
+        query {
+            viewer {
+                login
+            }
+            rateLimit {
+                limit
+                cost
+                remaining
+                resetAt
+            }
+        }
+    """
+    result = _run_query(query)
+    print(json.dumps(result, indent=2))
+
+
+def check_own_repos():
+    """List up all own repositories."""
+    query = """
+        query($first: Int!, $after: String) {
+            viewer {
+                repos: repositories(first: $first, after: $after) {
+                    edges {
+                        node {
+                            nameWithOwner
+                            url
+                        }
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
+            }
+        }
+    """
+    for repos in _iter_repo_pages(query):
+        for repo in repos['edges']:
+            node = repo['node']
+            name_with_owner = node['nameWithOwner']
+            url = node['url']
+            print(f'{name_with_owner} {url}')
+
+
+def check_starred_repos():
+    """List up all starred repositories."""
+    query = """
+        query($first: Int!, $after: String) {
+            viewer {
+                repos: starredRepositories(
+                    first: $first
+                    after: $after
+                    orderBy: {field: STARRED_AT, direction: DESC}
+                ) {
+                    edges {
+                        node {
+                            nameWithOwner
+                            url
+                        }
+                        starredAt
+                    }
+                    pageInfo {
+                        endCursor
+                        hasNextPage
+                    }
+                }
+            }
+        }
+    """
+    for repos in _iter_repo_pages(query):
+        for repo in repos['edges']:
+            node = repo['node']
+            name_with_owner = node['nameWithOwner']
+            url = node['url']
+            starred_at = repo['starredAt']
+            print(f'{name_with_owner} {url} {starred_at}')
+
+
+def _iter_repo_pages(query: str) -> Iterator[dict]:
+    after = ''
+    while True:
+        result = _run_query(query, {'first': REPOS_FIRST, 'after': after})
+        repos = result['data']['viewer']['repos']
+
+        yield repos
+
+        page_info = repos['pageInfo']
+        if not page_info['hasNextPage']:
+            break
+        after = page_info['endCursor']
+
+
+def _run_query(query: str, params: dict = {}) -> dict:
+    params_list = []
+    for key, value in params.items():
+        if value:
+            params_list.extend(['-F', f'{key}={value}'])
+
+    args = ['gh', 'api', 'graphql', *params_list, '-f', f'query={query}']
+
+    if DEBUG:
+        pprint(args)
+
+    result = subprocess.run(args, capture_output=True)
+    return json.loads(result.stdout)
+
+
+if __name__ == '__main__':
+    main()
