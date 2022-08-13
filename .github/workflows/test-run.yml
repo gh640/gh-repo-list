@@ -25,4 +25,12 @@ jobs:
         id: setup_python
       # Just run the script without the required `--type` option to check if
       # there's any compile-time error.
-      - run: ./gh-repo-list
+      - uses: gh640/command-result-action@v1
+        with:
+          command: ./gh-repo-list
+        id: run_script
+      - name: Check status
+        if: ${{ steps.run_script.outputs.exitCode != 2 }}
+        run: |
+          echo ${{ steps.run_script.outputs.stderr }}
+          exit 1
