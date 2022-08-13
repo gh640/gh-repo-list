@@ -5,6 +5,33 @@
 - Python 3 (`python3`)
     - supported versions: `3.10`, `3.9`, `3.8` and `3.7`
 
+## Installation
+
+Install:
+
+```zsh
+gh ext install gh640/gh-repo-list
+```
+
+Output sample:
+
+```text
+Cloning into '/xxx/.local/share/gh/extensions/gh-repo-list'...
+remote: Enumerating objects: 41, done.
+remote: Counting objects: 100% (41/41), done.
+remote: Compressing objects: 100% (27/27), done.
+remote: Total 41 (delta 15), reused 30 (delta 8), pack-reused 0
+Receiving objects: 100% (41/41), 7.79 KiB | 2.60 MiB/s, done.
+Resolving deltas: 100% (15/15), done.
+✓ Installed extension gh640/gh-repo-list
+```
+
+Uninstall:
+
+```zsh
+gh ext remove gh640/gh-repo-list
+```
+
 ## Usage
 
 ```zsh
