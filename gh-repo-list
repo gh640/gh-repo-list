@@ -3,9 +3,11 @@
 import argparse
 import json
 import subprocess
-from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pprint import pprint
+
+# Use `typing.*` instead of `collections.abc` to support older Python versions.
+from typing import Callable, Dict, Iterator
 
 DEBUG = False
 # The max number of results.
@@ -37,7 +39,7 @@ def parse_args() -> Args:
     return Args(type=parsed.type)
 
 
-def list_commands() -> dict[str, Callable[[], None]]:
+def list_commands() -> Dict[str, Callable[[], None]]:
     return {
         'viewer-status': check_viewer,
         'own': check_own_repos,
@@ -126,7 +128,7 @@ def check_starred_repos():
             print(f'{name_with_owner} {url} {starred_at}')
 
 
-def _iter_repo_pages(query: str) -> Iterator[dict]:
+def _iter_repo_pages(query: str) -> Iterator[Dict]:
     after = ''
     while True:
         result = _run_query(query, {'first': REPOS_FIRST, 'after': after})
@@ -140,7 +142,7 @@ def _iter_repo_pages(query: str) -> Iterator[dict]:
         after = page_info['endCursor']
 
 
-def _run_query(query: str, params: dict = {}) -> dict:
+def _run_query(query: str, params: Dict = {}) -> Dict:
     params_list = []
     for key, value in params.items():
         if value:
