@@ -1,4 +1,4 @@
-⚙️ Simple [GitHub CLI](https://cli.github.com/) extension to list up (own|starred) repositories.
+⚙️ Simple [GitHub CLI](https://cli.github.com/) extension to list all (own|starred) repositories.
 
 ## Requirements
 
