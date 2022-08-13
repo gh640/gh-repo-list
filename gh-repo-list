@@ -3,9 +3,11 @@
 import argparse
 import json
 import subprocess
-from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pprint import pprint
+
+# Use `typing.*` instead of `collections.abc` to support older Python versions.
+from typing import Callable, Iterator
 
 DEBUG = False
 # The max number of results.
