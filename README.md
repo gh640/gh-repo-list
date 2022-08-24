@@ -57,6 +57,20 @@ List up starred repositories:
 gh repo-list --type=starred
 ```
 
+## Examples
+
+Search and open a repo in browser:
+
+```zsh
+gh repo view -w $(gh repo-list --type=own | fzf | rg -o '^\S+')
+```
+
+Search and view the README:
+
+```zsh
+gh repo view $(gh repo-list --type=own | fzf | rg -o '^\S+')
+```
+
 ## Reference
 
 - [GitHub CLI | Take GitHub to the command line](https://cli.github.com/)
