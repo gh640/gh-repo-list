@@ -20,7 +20,8 @@ def main():
     commands = list_commands()
     command = commands[args.type]
 
-    command()
+    for output in command():
+        print(output)
 
 
 @dataclass
@@ -35,10 +36,11 @@ def parse_args() -> Args:
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('--type', type=str, choices=command_names, required=True)
     parsed = parser.parse_args()
+
     return Args(type=parsed.type)
 
 
-def list_commands() -> Dict[str, Callable[[], None]]:
+def list_commands() -> Dict[str, Callable[[], Iterator[str]]]:
     return {
         'viewer-status': check_viewer,
         'own': check_own_repos,
@@ -46,7 +48,7 @@ def list_commands() -> Dict[str, Callable[[], None]]:
     }
 
 
-def check_viewer():
+def check_viewer() -> Iterator[str]:
     """Check viewer status."""
     query = """
         query {
@@ -62,10 +64,10 @@ def check_viewer():
         }
     """
     result = _run_query(query)
-    print(json.dumps(result, indent=2))
+    yield json.dumps(result, indent=2)
 
 
-def check_own_repos():
+def check_own_repos() -> Iterator[str]:
     """List up all own repositories."""
     query = """
         query($first: Int!, $after: String) {
@@ -90,10 +92,10 @@ def check_own_repos():
             node = repo['node']
             name_with_owner = node['nameWithOwner']
             url = node['url']
-            print(f'{name_with_owner} {url}')
+            yield f'{name_with_owner} {url}'
 
 
-def check_starred_repos():
+def check_starred_repos() -> Iterator[str]:
     """List up all starred repositories."""
     query = """
         query($first: Int!, $after: String) {
@@ -124,7 +126,7 @@ def check_starred_repos():
             name_with_owner = node['nameWithOwner']
             url = node['url']
             starred_at = repo['starredAt']
-            print(f'{name_with_owner} {url} {starred_at}')
+            yield f'{name_with_owner} {url} {starred_at}'
 
 
 def _iter_repo_pages(query: str) -> Iterator[Dict]:
