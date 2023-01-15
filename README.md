@@ -3,7 +3,7 @@
 ## Requirements
 
 - Python 3 (`python3`)
-    - supported versions: `3.10`, `3.9`, `3.8` and `3.7`
+    - supported versions: `3.11`, `3.10`, `3.9`, `3.8` and `3.7`
 
 ## Installation
 
