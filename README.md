@@ -71,6 +71,14 @@ Search and view the README:
 gh repo view $(gh repo-list --type=own | fzf | rg -o '^\S+')
 ```
 
+Archive multiple repositories which starts with `prefix-` (Check the target repositories before running the command):
+
+```zsh
+❯ for repo in $(gh repo-list --type=own | rg -o '^username/prefix-\S+'); do
+  gh repo archive -y $repo
+done
+```
+
 ## Reference
 
 - [GitHub CLI | Take GitHub to the command line](https://cli.github.com/)
