@@ -9,7 +9,7 @@ from pprint import pprint
 from typing import Callable, Dict, Iterator
 
 DEBUG = False
-# The max number of results.
+# The max number of results to fetch in a request.
 REPOS_FIRST = 100
 
 
@@ -68,7 +68,7 @@ def check_viewer() -> Iterator[str]:
 
 
 def check_own_repos() -> Iterator[str]:
-    """List up all own repositories."""
+    """List all own repositories."""
     query = """
         query($first: Int!, $after: String) {
             viewer {
@@ -96,7 +96,7 @@ def check_own_repos() -> Iterator[str]:
 
 
 def check_starred_repos() -> Iterator[str]:
-    """List up all starred repositories."""
+    """List all starred repositories."""
     query = """
         query($first: Int!, $after: String) {
             viewer {
