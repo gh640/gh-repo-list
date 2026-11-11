@@ -12,14 +12,15 @@ on:
 jobs:
   tests:
     name: Test run
-    runs-on: ubuntu-latest
+    # Ubuntu 26.04 has no setup-python builds for these legacy versions.
+    runs-on: ${{ (matrix.python-version == '3.8' || matrix.python-version == '3.9') && 'ubuntu-24.04' || 'ubuntu-latest' }}
     strategy:
       matrix:
         # All active versions.
         python-version: ["3.12", "3.11", "3.10", "3.9", "3.8"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ matrix.python-version }}
         id: setup_python
